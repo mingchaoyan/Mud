@@ -13,6 +13,8 @@ public class GameMain : MonoBehaviour
 	public Vector2 lastDeltaPos;
 
 	public Queue<Message> messageQueue = new Queue<Message> ();
+	public Queue<Message> unShownMessageQueue = new Queue<Message> ();
+	public Queue<Message> shownMessageQueue = new Queue<Message> ();
 
 	// Use this for initialization
 	void Start ()
@@ -113,7 +115,7 @@ public class GameMain : MonoBehaviour
 	{
 		GUILayout.BeginArea (new Rect (0, 0, 540, 960));
 		scrollPosition = GUILayout.BeginScrollView (scrollPosition, GUILayout.Width (540), GUILayout.Height (960));
-		foreach (Message msg in messageQueue) {
+		foreach (Message msg in shownMessageQueue) {
 			GUILayout.BeginVertical ();
 			GUILayout.ExpandWidth (false);
 			if (msg.sender == 0) {
@@ -123,7 +125,7 @@ public class GameMain : MonoBehaviour
 				GUILayout.Label (msg.content);
 			} else if (msg.sender == 1) {
 				GUILayout.BeginHorizontal ();
-				GUI.color = Color.yellow;
+				GUI.color = Color.green;
 				GUI.skin.label.fontSize = 25;
 				GUILayout.Space (100);	
 				GUI.skin.label.alignment = TextAnchor.UpperRight;
@@ -133,7 +135,7 @@ public class GameMain : MonoBehaviour
 				GUI.color = Color.gray;
 				GUI.skin.label.fontSize = 15;
 				GUI.skin.label.alignment = TextAnchor.LowerLeft;
-				GUILayout.Label ("严明超");
+				GUILayout.Label ("[严明超]:");
 
 				GUILayout.BeginHorizontal ();
 				GUI.color = Color.green;
@@ -146,11 +148,10 @@ public class GameMain : MonoBehaviour
 			GUILayout.EndVertical ();
 		}
 		GUILayout.EndScrollView ();
+		print (messageQueue.Count);
+		if (GUI.Button (new Rect (0, 800, 150, 50), "next") && 0 != messageQueue.Count) {
+			shownMessageQueue.Enqueue ((Message)messageQueue.Dequeue ());
+		}
 		GUILayout.EndArea ();
-	}
-
-	void DestroyMainMenu ()
-	{
-
 	}
 }
