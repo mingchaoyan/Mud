@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameMain : MonoBehaviour
 {
@@ -11,10 +12,31 @@ public class GameMain : MonoBehaviour
 	public float inertiaDuration = 0.5f;
 	public Vector2 lastDeltaPos;
 
+	public Queue<Message> messageQueue = new Queue<Message> ();
+
 	// Use this for initialization
 	void Start ()
 	{
-	
+		messageQueue.Enqueue (new Message (0, "通话接入..."));
+		messageQueue.Enqueue (new Message (0, "建立连接..."));
+		messageQueue.Enqueue (new Message (0, "接收讯息..."));
+		messageQueue.Enqueue (new Message (2, "有人吗？"));
+		messageQueue.Enqueue (new Message (2, "这玩意能用吗？"));
+		messageQueue.Enqueue (new Message (2, "有人能收到我的消息吗？"));
+		messageQueue.Enqueue (new Message (1, "收到，你是哪位？"));
+		messageQueue.Enqueue (new Message (2, "呜呜,让我先哭一会！！！太感谢能收到你的消息了！"));
+		messageQueue.Enqueue (new Message (2, "万幸林博士在我耳中植入了RUR芯片，向外界发送脑电波，我已经发送了好久，只有你收到了。"));
+		messageQueue.Enqueue (new Message (2, "我曾经。。是中关村秘密研究院的实习生，名字是严明超，你好。"));
+		messageQueue.Enqueue (new Message (2, "请你务必要帮我，如果这件事出了点差错，你我都会消失。"));
+		messageQueue.Enqueue (new Message (1, "什么事？这么严重？"));
+		messageQueue.Enqueue (new Message (2, "这件事有些不可思议"));
+		messageQueue.Enqueue (new Message (2, "你信不信这世界上有飞碟？信不信有尼斯湖水怪！"));
+		messageQueue.Enqueue (new Message (2, "你信不信爱因斯坦的相对论呢影响了后世很多成功的科学理论！但F=ma是不对的！"));
+		messageQueue.Enqueue (new Message (1, "我信，F=ma这个我物理不太好诶！"));
+		messageQueue.Enqueue (new Message (2, "可以交流！"));
+		messageQueue.Enqueue (new Message (2, "呜呜,让我先哭一会！！！太感谢能收到你的消息了！"));
+		messageQueue.Enqueue (new Message (2, "呜呜,让我先哭一会！！！太感谢能收到你的消息了！"));
+
 	}
 	
 	// Update is called once per frame
@@ -71,16 +93,19 @@ public class GameMain : MonoBehaviour
 	{
 		GUI.skin.label.fontSize = 40;
 		GUI.skin.label.alignment = TextAnchor.LowerCenter;
-		GUI.Label (new Rect (540f / 3f, 960f / 20f, 
-		                     540f / 2f, 960f / 10f), "反贼，哪里跑");
+		GUI.Label (new Rect (540f / 4f, 960f / 20f, 
+		                     540f / 2f, 960f / 10f), "文字游戏  ");
 		
 		GUI.skin.button.fontSize = 40;
-		if (GUI.Button (new Rect (540f / 3f, 960f * 8 / 10f, 
-		                          540f / 3f, 960f / 15f), "开始游戏")) {
+		if (GUI.Button (new Rect (540f / 3f, 960f * 6 / 10f, 
+		                          540f / 3f, 960f / 15f), "返回")) {
 			Time.timeScale = 1;
-
-			//Application.LoadLevel ("level1");
 			isChatting = true;
+		}
+		GUI.skin.button.fontSize = 40;
+		if (GUI.Button (new Rect (540f / 3f, 960f * 8 / 10f, 
+		                          540f / 3f, 960f / 15f), "离开")) {
+			Application.Quit ();
 		}
 	}
 
@@ -88,19 +113,37 @@ public class GameMain : MonoBehaviour
 	{
 		GUILayout.BeginArea (new Rect (0, 0, 540, 960));
 		scrollPosition = GUILayout.BeginScrollView (scrollPosition, GUILayout.Width (540), GUILayout.Height (960));
-		GUI.color = Color.green;
-		for (int i=0; i<300; ++i) {
-			GUILayout.BeginHorizontal ();
-			GUI.skin.label.fontSize = 25;
-			GUI.skin.label.alignment = TextAnchor.UpperLeft;
-			if (i % 2 != 0) {
+		foreach (Message msg in messageQueue) {
+			GUILayout.BeginVertical ();
+			GUILayout.ExpandWidth (false);
+			if (msg.sender == 0) {
+				GUI.color = Color.white;
+				GUI.skin.label.fontSize = 25;
+				GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+				GUILayout.Label (msg.content);
+			} else if (msg.sender == 1) {
+				GUILayout.BeginHorizontal ();
+				GUI.color = Color.yellow;
+				GUI.skin.label.fontSize = 25;
 				GUILayout.Space (100);	
-			}
-			GUILayout.Label ("反贼fffffffffffffffffffffffffbbbbbbaaaaaasdfffffffffffffffffffffffffffffff");
-			if (i % 2 == 0) {
+				GUI.skin.label.alignment = TextAnchor.UpperRight;
+				GUILayout.Label (msg.content);
+				GUILayout.EndHorizontal ();
+			} else {
+				GUI.color = Color.gray;
+				GUI.skin.label.fontSize = 15;
+				GUI.skin.label.alignment = TextAnchor.LowerLeft;
+				GUILayout.Label ("严明超");
+
+				GUILayout.BeginHorizontal ();
+				GUI.color = Color.green;
+				GUI.skin.label.fontSize = 25;
+				GUI.skin.label.alignment = TextAnchor.UpperLeft;
+				GUILayout.Label (msg.content);
 				GUILayout.Space (100);	
+				GUILayout.EndHorizontal ();
 			}
-			GUILayout.EndHorizontal ();
+			GUILayout.EndVertical ();
 		}
 		GUILayout.EndScrollView ();
 		GUILayout.EndArea ();
