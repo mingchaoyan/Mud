@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class GameMain : MonoBehaviour
 {
+
+	public float timer = 2.0f;
+
 	bool isChatting = true;
 	public Vector2 scrollPosition;
 
@@ -82,7 +85,7 @@ public class GameMain : MonoBehaviour
 		float ratioW = System.Convert.ToSingle (Screen.width) / 540f;
 		float ratioH = System.Convert.ToSingle (Screen.height) / 960f;
 		GUI.matrix = Matrix4x4.TRS (new Vector3 (0, 0, 0), 
-		                            Quaternion.identity, new Vector3 (ratioW, ratioH, 1));
+			Quaternion.identity, new Vector3 (ratioW, ratioH, 1));
 		if (!isChatting || Time.timeScale == 0) {
 			MainMenu ();
 		} else {
@@ -96,17 +99,17 @@ public class GameMain : MonoBehaviour
 		GUI.skin.label.fontSize = 40;
 		GUI.skin.label.alignment = TextAnchor.LowerCenter;
 		GUI.Label (new Rect (540f / 4f, 960f / 20f, 
-		                     540f / 2f, 960f / 10f), "文字游戏  ");
+			540f / 2f, 960f / 10f), "文字游戏  ");
 		
 		GUI.skin.button.fontSize = 40;
 		if (GUI.Button (new Rect (540f / 3f, 960f * 6 / 10f, 
-		                          540f / 3f, 960f / 15f), "返回")) {
+			    540f / 3f, 960f / 15f), "返回")) {
 			Time.timeScale = 1;
 			isChatting = true;
 		}
 		GUI.skin.button.fontSize = 40;
 		if (GUI.Button (new Rect (540f / 3f, 960f * 8 / 10f, 
-		                          540f / 3f, 960f / 15f), "离开")) {
+			    540f / 3f, 960f / 15f), "离开")) {
 			Application.Quit ();
 		}
 	}
@@ -114,7 +117,9 @@ public class GameMain : MonoBehaviour
 	void Chat ()
 	{
 		GUILayout.BeginArea (new Rect (0, 0, 540, 960));
+		print (scrollPosition);
 		scrollPosition = GUILayout.BeginScrollView (scrollPosition, GUILayout.Width (540), GUILayout.Height (960));
+		print (scrollPosition);
 		foreach (Message msg in shownMessageQueue) {
 			GUILayout.BeginVertical ();
 			GUILayout.ExpandWidth (false);
@@ -148,10 +153,21 @@ public class GameMain : MonoBehaviour
 			GUILayout.EndVertical ();
 		}
 		GUILayout.EndScrollView ();
+
 		print (messageQueue.Count);
-		if (GUI.Button (new Rect (0, 800, 150, 50), "next") && 0 != messageQueue.Count) {
+		timer -= Time.deltaTime;
+		if (timer <= 0 && 0 != messageQueue.Count) {
 			shownMessageQueue.Enqueue ((Message)messageQueue.Dequeue ());
+			scrollPosition.y += 999;
+//			Debug.Log (string.Format ("Timer1 is up !!! time=${0}", Time.time));
+			timer = 2.0f;
 		}
+
+//		print (messageQueue.Count);
+//		if (GUI.Button (new Rect (0, 800, 150, 50), "next") && 0 != messageQueue.Count) {
+//			shownMessageQueue.Enqueue ((Message)messageQueue.Dequeue ());
+//			scrollPosition.y += 999;
+//		}
 		GUILayout.EndArea ();
 	}
 }
