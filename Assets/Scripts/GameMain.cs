@@ -19,9 +19,20 @@ public class GameMain : MonoBehaviour
 	public Queue<Message> unShownMessageQueue = new Queue<Message> ();
 	public Queue<Message> shownMessageQueue = new Queue<Message> ();
 
+	public AudioSource audioSource;
+	public AudioClip bgm;
+	public AudioClip buttonSound;
+	public AudioClip msgSound;
+	public float bgmVolume = 1.0f;
+	public float soundVolume = 1.0f;
+
+
 	// Use this for initialization
 	void Start ()
 	{
+		audioSource = GetComponent<AudioSource> ();
+		audioSource.clip = bgm;
+
 		messageQueue.Enqueue (new Message (0, "通话接入..."));
 		messageQueue.Enqueue (new Message (0, "建立连接..."));
 		messageQueue.Enqueue (new Message (0, "接收讯息..."));
@@ -41,7 +52,6 @@ public class GameMain : MonoBehaviour
 		messageQueue.Enqueue (new Message (2, "可以交流！"));
 		messageQueue.Enqueue (new Message (2, "呜呜,让我先哭一会！！！太感谢能收到你的消息了！"));
 		messageQueue.Enqueue (new Message (2, "呜呜,让我先哭一会！！！太感谢能收到你的消息了！"));
-
 	}
 	
 	// Update is called once per frame
@@ -51,6 +61,15 @@ public class GameMain : MonoBehaviour
 			Time.timeScale = 0;
 		}
 		UpdateHandleTouch ();
+		PlayerBGM ();
+	}
+
+	void PlayerBGM ()
+	{
+		if (!audioSource.isPlaying) {
+			audioSource.Play ();
+		}
+		audioSource.volume = bgmVolume;
 	}
 
 	void UpdateHandleTouch ()
@@ -96,22 +115,65 @@ public class GameMain : MonoBehaviour
 
 	void MainMenu ()
 	{
-		GUI.skin.label.fontSize = 40;
-		GUI.skin.label.alignment = TextAnchor.LowerCenter;
-		GUI.Label (new Rect (540f / 4f, 960f / 20f, 
-			540f / 2f, 960f / 10f), "文字游戏  ");
-		
+		GUILayout.BeginVertical ();
+		GUILayout.Space (100);
+
+		GUILayout.BeginHorizontal ();
+		GUILayout.Space (150);
+		GUI.skin.label.fontSize = 50;
+		GUI.skin.label.alignment = TextAnchor.UpperCenter;
+		GUILayout.Label ("文字游戏", GUILayout.Width (240), GUILayout.Height (150));
+		GUILayout.Space (150);
+		GUILayout.EndHorizontal ();
+
+		GUILayout.BeginHorizontal ();
+		GUILayout.Space (150);
+		GUI.skin.label.fontSize = 30;
+		//GUI.skin.label.alignment = TextAnchor.LowerCenter;
+		GUILayout.Label ("音乐", GUILayout.Width (100), GUILayout.Height (100));
+		GUILayout.BeginVertical ();
+		GUILayout.Space (20);
+		bgmVolume = GUILayout.HorizontalSlider (bgmVolume, 0f, 1.0f, GUILayout.Width (140), GUILayout.Height (100));
+		GUILayout.EndVertical ();
+		GUILayout.Space (150);
+		GUILayout.EndHorizontal ();
+
+		GUILayout.BeginHorizontal ();
+		GUILayout.Space (150);
+		GUI.skin.label.fontSize = 30;
+		GUILayout.Label ("音效", GUILayout.Width (100), GUILayout.Height (100));
+		GUILayout.BeginVertical ();
+		GUILayout.Space (20);
+		soundVolume = GUILayout.HorizontalSlider (soundVolume, 0f, 1.0f, GUILayout.Width (140), GUILayout.Height (100));
+		GUILayout.EndVertical ();
+		GUILayout.Space (150);
+		GUILayout.EndHorizontal ();
+
+		GUILayout.Space (100);
+
+		GUILayout.BeginHorizontal ();
+		GUILayout.Space (180);
 		GUI.skin.button.fontSize = 40;
-		if (GUI.Button (new Rect (540f / 3f, 960f * 6 / 10f, 
-			    540f / 3f, 960f / 15f), "返回")) {
+		if (GUILayout.Button ("返回", GUILayout.Width (180), GUILayout.Height (50))) {
+			audioSource.PlayOneShot (buttonSound, soundVolume * 1 / bgmVolume);
 			Time.timeScale = 1;
 			isChatting = true;
 		}
+		GUILayout.Space (180);
+		GUILayout.EndHorizontal ();
+
+		GUILayout.Space (100);
+
+		GUILayout.BeginHorizontal ();
+		GUILayout.Space (180);
 		GUI.skin.button.fontSize = 40;
-		if (GUI.Button (new Rect (540f / 3f, 960f * 8 / 10f, 
-			    540f / 3f, 960f / 15f), "离开")) {
+		if (GUILayout.Button ("离开", GUILayout.Width (180), GUILayout.Height (50))) {
+			audioSource.PlayOneShot (buttonSound, soundVolume * 1 / bgmVolume);
 			Application.Quit ();
 		}
+		GUILayout.EndHorizontal ();
+
+		GUILayout.EndVertical ();
 	}
 
 	void Chat ()
@@ -161,6 +223,7 @@ public class GameMain : MonoBehaviour
 			scrollPosition.y += 999;
 //			Debug.Log (string.Format ("Timer1 is up !!! time=${0}", Time.time));
 			timer = 2.0f;
+			audioSource.PlayOneShot (msgSound, soundVolume * 1 / bgmVolume);
 		}
 
 //		print (messageQueue.Count);
